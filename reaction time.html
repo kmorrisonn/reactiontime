@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colour Reader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            margin: 0 auto; /* Center the slider horizontally */
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Apply the button's background color to the slider */
+        input[type="range"] {
+            background-color: #007bff;
+        }
+
+        .slider-label {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .slider-value {
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Color Reader</h1>
+        <p>Available colors: Silver, Pink, Gold, Blue, Black</p>
+
+        <label for="speed" class="slider-label">Select the speed (words per minute):</label>
+        <div class="slider-value" id="speed-value">Speed: 200</div>
+        <input type="range" id="speed" min="1" max="400" step="1" value="200">
+        
+        <p></p>
+        
+        <label for="numColors">Enter the number of colours to read:</label>
+        <input type="number" id="numColors" min="1" step="1" value="3">
+
+        <button onclick="readColors()">Read Colors</button>
+    </div>
+
+    <script>
+        const speedInput = document.getElementById("speed");
+        const speedValue = document.getElementById("speed-value");
+
+        speedInput.addEventListener("input", () => {
+            speedValue.textContent = `Speed: ${speedInput.value}`;
+        });
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        let availableColors = ["Silver", "Pink", "Gold", "Blue", "Black"];
+        let shuffledColors = [...availableColors];
+
+        function readColors() {
+            const speed = parseInt(speedInput.value);
+            const numColors = parseInt(document.getElementById("numColors").value);
+
+            // Shuffle the colors if needed
+            if (shuffledColors.length < numColors) {
+                shuffledColors = [...availableColors];
+                shuffleArray(shuffledColors);
+            }
+
+            const speechSynthesis = window.speechSynthesis;
+
+            for (let i = 0; i < numColors; i++) {
+                const color = shuffledColors.pop(); // Get and remove the last color
+                const utterance = new SpeechSynthesisUtterance(color);
+                utterance.rate = speed / 100;
+                speechSynthesis.speak(utterance);
+
+                if (shuffledColors.length === 0) {
+                    // If all colors are used, reshuffle the array
+                    shuffledColors = [...availableColors];
+                    shuffleArray(shuffledColors);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
